@@ -19,7 +19,7 @@ namespace luxclusif.aggregator.application.UseCases.Order.CreateTotalExpendedInO
 
         public async Task<Unit> Handle(CreateUserInput request, CancellationToken cancellationToken)
         {
-            var item = new TotalExpendedInOrdersAggregated(request.Name,request.UserId,0);
+            var item = new TotalExpendedInOrdersAggregated(request.Name,request.Id,0);
 
             await repository.Insert(item, cancellationToken);
             await unitOfWork.CommitAsync(cancellationToken);

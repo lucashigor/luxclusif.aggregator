@@ -4,12 +4,12 @@ namespace luxclusif.aggregator.application.UseCases.Order.CreateTotalExpendedInO
 {
     public class CreateUserInput : IRequest
     {
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public CreateUserInput(Guid userId, string name)
         {
-            UserId = userId;
+            Id = userId;
             Name = name;
         }
     }
