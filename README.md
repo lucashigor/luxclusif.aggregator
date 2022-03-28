@@ -35,16 +35,21 @@ With you look in your vs Code you will see a Thunder Client installed you can im
 </p>
 2 - Press F5 to start, after enter at http://localhost:16543/login
 
-    user - admin@luxclusif.com
-    password - P@ssw0rd
+```
+user - admin@luxclusif.com
+password - P@ssw0rd
+```
 <p>
     <img src="./docs/imgs/step2.png" alt="" />
 </p>
 
 3 - Create new server
-    host - luxclusif-aggregator-postgres
-    user - postgres
-    password - P@ssw0rd
+
+```
+host - luxclusif-aggregator-postgres
+user - postgres
+password - P@ssw0rd
+```
 
 <p>
     <img src="./docs/imgs/step3.png" alt="" />
@@ -62,16 +67,21 @@ With you look in your vs Code you will see a Thunder Client installed you can im
 
 5 - Enter at rabbitmq localhost:15672
 
-    user - guest
-    password - guest
+```
+user - guest
+password - guest
+```
 <p>
     <img src="./docs/imgs/step6.png" alt="" />
 </p>
 
 6 - Create two queues
 
+```
 Queue.OrderProcessingQueue
 Queue.UserProcessingQueue
+```
+
 <p>
     <img src="./docs/imgs/step7.png" alt="" />
 </p>
