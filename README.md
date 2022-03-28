@@ -18,9 +18,9 @@ This project is a microservices with a 2 workers who will receive messages and a
 
 - **[Visual Studio 2022](https://visualstudio.microsoft.com/vs/)**
 - **[Docker Desktop](https://docs.docker.com/desktop/windows/install/)**
-  
+- **[Postman]()**
 ### Open
-Once you have the pre-requirements you only will need to open the folder with visual studio and after that reopen it in container.
+Once you have the pre-requirements you only will need to open the folder with Visual Studio.
 
 
 # Test
