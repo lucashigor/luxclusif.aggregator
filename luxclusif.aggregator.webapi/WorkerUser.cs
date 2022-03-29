@@ -1,11 +1,8 @@
 ﻿using luxclusif.aggregator.application.Constants;
 using luxclusif.aggregator.application.Interfaces;
-using luxclusif.aggregator.application.Models;
-using luxclusif.aggregator.application.UseCases.Order.CreateTotalExpendedInOrdersAggregated;
-using luxclusif.aggregator.domain.Repository;
+using luxclusif.aggregator.application.UseCases.Order.CreateUserTotalExpendedInOrdersAggregated;
 using luxclusif.aggregator.infrastructure.rabbitmq;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace luxclusif.aggregator.webapi
 {
@@ -13,9 +10,14 @@ namespace luxclusif.aggregator.webapi
     {
         private readonly IMessageReceiverInterface busControl;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        public WorkerUser(IServiceScopeFactory serviceScopeFactory)
+        public WorkerUser(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
-            busControl = RabbitHutch.CreateBus("luxclusif-aggregator-rabbitmq");
+            this.busControl = RabbitHutch.CreateBus(
+                configuration.GetValue<string>("rabbitmq:hostName"),
+                configuration.GetValue<string>("rabbitmq:hostPort"),
+                configuration.GetValue<string>("rabbitmq:virtualHost"),
+                configuration.GetValue<string>("rabbitmq:username"),
+                configuration.GetValue<string>("rabbitmq:password"));
             this.serviceScopeFactory = serviceScopeFactory;
         }
 

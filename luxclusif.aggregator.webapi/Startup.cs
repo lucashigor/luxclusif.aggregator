@@ -4,6 +4,7 @@ using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using luxclusif.aggregator.kernel.Extensions;
 using luxclusif.aggregator.webapi.Extensions;
+using luxclusif.aggregator.webapi.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -16,7 +17,14 @@ namespace luxclusif.aggregator.webapi
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var conf = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{env}.json");
+
+
+            Configuration = conf.Build();
+
         }
 
         public IConfiguration Configuration { get; }
@@ -24,6 +32,10 @@ namespace luxclusif.aggregator.webapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection")));
+
+            services.AddHangfireServer();
+
             services
                 .AddDbContexts(Configuration)
                 .AddUseCases()
@@ -58,19 +70,6 @@ namespace luxclusif.aggregator.webapi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "luxclusif.aggregator.webapi", Version = "v1" });
             });
 
-            var asds = Configuration.GetConnectionString("HangfireConnection");
-
-            services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(asds, new PostgreSqlStorageOptions
-                {
-                    QueuePollInterval = TimeSpan.FromMinutes(1),
-                }));
-
-
-            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,13 +82,17 @@ namespace luxclusif.aggregator.webapi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "luxclusif.aggregator.webapi v1"));
             }
 
-            app.UseHangfireDashboard();
-            BackgroundJob.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
-
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            var options = new DashboardOptions
             {
-                IsReadOnlyFunc = (DashboardContext context) => true
-            });
+                Authorization = new[] {
+                    new DashboardAuthorization(new[]
+                    {
+                        new HangfireUserCredentials("user1",  "P@ssw0rd")
+                    })
+                }
+            };
+
+            app.UseHangfireDashboard("/hangfire", options);
 
             app.UseGlobalExceptionHandlerMiddleware();
 
@@ -102,7 +105,6 @@ namespace luxclusif.aggregator.webapi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHangfireDashboard();
             });
         }
     }

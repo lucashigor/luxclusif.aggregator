@@ -1,5 +1,5 @@
 ﻿using luxclusif.aggregator.application.Models;
-using luxclusif.aggregator.application.UseCases.Order.CreateTotalExpendedInOrdersAggregated;
+using luxclusif.aggregator.application.UseCases.Order.CreateUserTotalExpendedInOrdersAggregated;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;

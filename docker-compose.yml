@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  trainerhut.persons.webapi:
+  luxclusif.aggregator.webapi:
     image: ${DOCKER_REGISTRY-}luxclusifaggregatorwebapi
     build:
       context: .
@@ -28,6 +28,11 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@luxclusif.com"
       PGADMIN_DEFAULT_PASSWORD: "P@ssw0rd"
+    volumes:
+      - ./Local/pgadmin/pgadmin:/var/lib/pgadmin \
+      - ./Local/pgadmin/certs/certificate.cert:/certs/server.cert \
+      - ./Local/pgadmin/certs/certificate.key:/certs/server.key \
+      - ./Local/pgadmin/tmp/servers.json:/pgadmin4/servers.json
     networks:
       - luxclusif-aggregator-network
     depends_on:
@@ -41,7 +46,7 @@ services:
       - ./Local/drivers:/flyway/drivers
       - ./Local/database/conf:/flyway/conf
     depends_on:
-      - luxclusif-aggregator-network
+      - luxclusif-aggregator-postgres
     networks:
       - luxclusif-aggregator-network
 

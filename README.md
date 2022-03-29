@@ -101,9 +101,10 @@ Queue.UserProcessingQueue
     <img src="./docs/imgs/step9.png" alt="" />
 </p>
 10 - Send new message informing the creating of an Order
+
 ```
 {
-"userIid":"486ec74f-a82a-4c28-a5e3-62416e821d8d",
+"userId":"486ec74f-a82a-4c28-a5e3-62416e821d8d",
 "Value":100
 }
 ```

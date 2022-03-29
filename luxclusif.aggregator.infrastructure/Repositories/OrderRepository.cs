@@ -3,39 +3,81 @@ using luxclusif.aggregator.domain.Repository;
 using luxclusif.aggregator.domain.SeedWork.ShearchableRepository;
 using luxclusif.aggregator.infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
-using DomainEntity = luxclusif.aggregator.domain.Entity;
+using Microsoft.Extensions.Configuration;
 
 namespace luxclusif.aggregator.infrastructure.Repositories;
 public class OrderRepository
     : IOrderRepository
 {
+    private readonly IConfiguration _configuration;
 
     private readonly DbSet<TotalExpendedInOrdersAggregated> dbset;
 
-    public OrderRepository(PrincipalContext context)
+    public OrderRepository(PrincipalContext context, IConfiguration configuration)
     {
         dbset = context.TotalExpendedInOrdersAggregated;
+        _configuration = configuration;
     }
 
+    public async Task InsertSynchronous(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
+    {
+        DbContextOptions<PrincipalContext> contextOptions = getDbContextOptions();
 
-    public async Task Insert(DomainEntity.TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
+        using var context = new PrincipalContext(contextOptions);
+        await context.TotalExpendedInOrdersAggregated.AddAsync(user, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private DbContextOptions<PrincipalContext> getDbContextOptions()
+    {
+        var conn = _configuration.GetConnectionString("PrincipalDatabase");
+
+        var contextOptions = new DbContextOptionsBuilder<PrincipalContext>()
+            .UseNpgsql(conn)
+            .Options;
+        return contextOptions;
+    }
+
+    public async Task<TotalExpendedInOrdersAggregated> GetByUserIdSynchronous(Guid userId, CancellationToken cancellationToken)
+    {
+        DbContextOptions<PrincipalContext> contextOptions = getDbContextOptions();
+
+        using var context = new PrincipalContext(contextOptions);
+        var item = await context.TotalExpendedInOrdersAggregated
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+        return item!;
+    }
+
+    public async Task UpdateSynchronous(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
+    {
+        DbContextOptions<PrincipalContext> contextOptions = getDbContextOptions();
+
+        using var context = new PrincipalContext(contextOptions);
+
+        context.TotalExpendedInOrdersAggregated.Attach(user);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task Insert(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
     => await dbset.AddAsync(user, cancellationToken);
 
-    public async Task<DomainEntity.TotalExpendedInOrdersAggregated> GetByUserId(Guid userId, CancellationToken cancellationToken)
+    public async Task<TotalExpendedInOrdersAggregated> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
         var item = await dbset.FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
         return item!;
     }
 
-    public Task Update(DomainEntity.TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
+    public Task Update(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken)
     {
         dbset.Attach(user);
 
         return Task.CompletedTask;
     }
 
-    public async Task<SearchOutput<DomainEntity.TotalExpendedInOrdersAggregated>> Search(SearchInput input, CancellationToken cancellationToken)
+    public async Task<SearchOutput<TotalExpendedInOrdersAggregated>> Search(SearchInput input, CancellationToken cancellationToken)
     {
         var toSkip = (input.Page - 1) * input.PerPage;
         var query = dbset.AsNoTracking();
@@ -53,8 +95,8 @@ public class OrderRepository
         return new(input.Page, input.PerPage, total, items);
     }
 
-    private static IQueryable<DomainEntity.TotalExpendedInOrdersAggregated> AddOrderToquery(
-        IQueryable<DomainEntity.TotalExpendedInOrdersAggregated> query,
+    private static IQueryable<TotalExpendedInOrdersAggregated> AddOrderToquery(
+        IQueryable<TotalExpendedInOrdersAggregated> query,
         string orderProperty,
         SearchOrder order)
     => (orderProperty.ToLower(), order) switch
