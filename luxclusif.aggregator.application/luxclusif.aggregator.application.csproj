@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire.Core" Version="1.7.28" />
     <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

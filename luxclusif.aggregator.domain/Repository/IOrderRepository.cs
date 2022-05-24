@@ -8,4 +8,7 @@ public interface IOrderRepository : IRepository, IShearchableRepository<TotalExp
     Task Insert(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken);
     Task<TotalExpendedInOrdersAggregated> GetByUserId(Guid userId, CancellationToken cancellationToken);
     Task Update(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken);
+    Task InsertSynchronous(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken);
+    Task UpdateSynchronous(TotalExpendedInOrdersAggregated user, CancellationToken cancellationToken);
+    Task<TotalExpendedInOrdersAggregated> GetByUserIdSynchronous(Guid userId, CancellationToken cancellationToken);
 }

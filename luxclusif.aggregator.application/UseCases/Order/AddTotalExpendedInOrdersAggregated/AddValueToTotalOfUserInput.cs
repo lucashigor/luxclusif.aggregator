@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace luxclusif.aggregator.application.UseCases.Order.CreateTotalExpendedInOrdersAggregated
+namespace luxclusif.aggregator.application.UseCases.Order.AddTotalExpendedInOrdersAggregated
 {
     public class AddValueToTotalOfUserInput : IRequest
     {

@@ -9,31 +9,35 @@ namespace luxclusif.aggregator.infrastructure.rabbitmq
         private static IConnection _connection;
         private static IModel _channel;
 
-        public static IMessageReceiverInterface CreateBus(string hostName)
-        {
-            _factory = new ConnectionFactory { HostName = hostName, DispatchConsumersAsync = true };
-            _connection = _factory.CreateConnection();
-            _channel = _connection.CreateModel();
-
-            return new ReceiveMessageRabbitmq(_channel);
-        }
-
+        
         public static IMessageReceiverInterface CreateBus(
-            string hostName,
-            ushort hostPort,
-            string virtualHost,
-            string username,
-            string password)
+            string? hostName,
+            string? hostPort,
+            string? virtualHost,
+            string? username,
+            string? password)
         {
-            _factory = new ConnectionFactory
+            _factory = new ConnectionFactory();
+
+            if(!string.IsNullOrEmpty(hostName))
+                _factory.HostName = hostName;
+
+            if (!string.IsNullOrEmpty(hostPort))
             {
-                HostName = hostName,
-                Port = hostPort,
-                VirtualHost = virtualHost,
-                UserName = username,
-                Password = password,
-                DispatchConsumersAsync = true
-            };
+                var port = int.Parse(hostPort);
+                _factory.Port = port;
+            }
+
+            if (!string.IsNullOrEmpty(virtualHost))
+                _factory.VirtualHost = virtualHost;
+
+            if (!string.IsNullOrEmpty(username))
+                _factory.UserName = username;
+
+            if (!string.IsNullOrEmpty(password))
+                _factory.Password = password;
+
+            _factory.DispatchConsumersAsync = true;
 
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
